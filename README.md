@@ -8,19 +8,18 @@ A simple and lightweight C test framework.
 
 Assert | Description
 -------|------------
-CAT_ASSERT(expression) | Assertions that condition is true
-CAT_ASSERT_FINAL(expression) | Must be called at the end of each `CAT_CASE`, `CAT_FUNC` and `CAT_FUNC_ARGS`
+CAT_ASSERT(expression) | Asserts that condition is true
+CAT_ASSERT_STR_EQUAL(actual, expected) | Asserts that _actual_ equals to _expected_
+CAT_ASSERT_NOT_NULL(ptr) | Asserts that _ptr_ is not NULL
+CAT_ASSERT_NULL(ptr) | Asserts that _ptr_ is NULL
 
 ### Functions
 
 Function | Description
 -------|------------
 CAT_CASE(name) | Registers a test case
-CAT_FUNC(name) | Declares a test function that can be called using `CAT_FUNC_RUN(name)`
-CAT_FUNC_ARGS(name, (args, ...)) | Declares a test function with arguments. Can be called using `CAT_FUNC_ARGS_RUN(name, (args, ...))`
-CAT_FUNC_RUN(name) | Calls a declared `CAT_FUNC` by name
-CAT_FUNC_ARGS_RUN(name, (args, ...)) | Calls a declared `CAT_FUNC_ARGS` by name
-CAT_LOG(...) | Prints log
+CAT_FUNC(name, args) | Declares a test function that can be called using `CAT_FUNC_RUN(name)`
+CAT_FUNC_RUN(name, args) | Calls a declared `CAT_FUNC` by name
 
 ### Samples
 ```c
@@ -29,36 +28,34 @@ CAT_LOG(...) | Prints log
 CAT_FUNC(simple_func)
 {
 	CAT_LOG("simple_func is invoked!\n");
-	CAT_ASSERT_FINAL(1);
+	CAT_ASSERT(1);
 }
 
-CAT_FUNC_ARGS(compare_numbers, (int a, int b))
+CAT_FUNC(compare_numbers, int a, int b)
 {
-	CAT_ASSERT_FINAL(a == b);
+	CAT_ASSERT(a == b);
 }
 
 CAT_CASE(test1)
 {
-	CAT_ASSERT_FINAL(1);
+	CAT_ASSERT(1);
 }
 
 CAT_CASE(test2)
 {
 	CAT_FUNC_RUN(simple_func);
-	CAT_ASSERT_FINAL(1);
+	CAT_ASSERT(1);
 }
 
 CAT_CASE(test3)
 {
-	int ret = strcmp("TEST", "FEST");
-	CAT_ASSERT(ret != 0);
-	CAT_ASSERT_FINAL(1);
+	CAT_ASSERT_STR_EQUAL("TEST", "TEST");
 }
 
 CAT_CASE(test4)
 {
-	CAT_FUNC_ARGS_RUN(compare_numbers, (2, 2));
-	CAT_ASSERT_FINAL(1);
+	CAT_FUNC_RUN(compare_numbers, 2, 2);
+	CAT_ASSERT(1);
 }
 ```
 
