@@ -10,12 +10,15 @@
 
 #define COLOR_RED "\033[1;31m"
 #define COLOR_GREEN "\033[2;32m"
+#define COLOR_GREEN_BOLD "\033[1;32m"
 #define COLOR_LIGHT_CYAN "\033[1;36m"
+#define COLOR_YELLOW "\033[1;93m"
 #define COLOR_NORMAL "\033[0m"
 
 enum final_result_type {
 	RESULT_TYPE_PASS = 0,
 	RESULT_TYPE_FAIL,
+	RESULT_TYPE_SKIP,
 	RESULT_TYPE_UNKNOWN,
 	RESULT_TYPE_COUNT,
 };
@@ -113,6 +116,11 @@ test_case_run(const struct test_item *item)
 		result.color = COLOR_RED;
 		state.results[RESULT_TYPE_FAIL]++;
 		break;
+	case TEST_SKIP:
+		result.message_long = "SKIP";
+		result.color = COLOR_YELLOW;
+		state.results[RESULT_TYPE_SKIP]++;
+		break;
 	default:
 		result.message_long = "UNKNOWN";
 		result.color = COLOR_RED;
@@ -153,14 +161,16 @@ display_summary(void)
 
 	total = state.results[RESULT_TYPE_PASS] +
 		state.results[RESULT_TYPE_FAIL] +
+		state.results[RESULT_TYPE_SKIP] +
 		state.results[RESULT_TYPE_UNKNOWN];
 
-	printf("\n%-10s\n\t%-10s %-10s %-10s %-10s\n"
-		"\t%-10d %-10d %-10d %-10d\n",
-		"Summary", "TOTAL", "PASSED", "FAILED", "UNKNOWN",
+	printf("\n%-10s\n\t%-10s %-10s %-10s %-10s %-10s\n"
+		"\t%-10d %-10d %-10d %-10d %-10d\n",
+		"Summary", "TOTAL", "PASSED", "FAILED", "SKIPPED", "UNKNOWN",
 		total,
 		state.results[RESULT_TYPE_PASS],
 		state.results[RESULT_TYPE_FAIL],
+		state.results[RESULT_TYPE_SKIP],
 		state.results[RESULT_TYPE_UNKNOWN]
 	);
 
@@ -266,6 +276,13 @@ main(int argc, char *argv[])
 	{
 		/* Failed */
 		retval = -1;
+		printf("%s==================== FAILED ====================%s\n",
+			COLOR_RED, COLOR_NORMAL);
+	}
+	else
+	{
+		printf("%s==================== SUCCESS ====================%s\n",
+			COLOR_GREEN_BOLD, COLOR_NORMAL);
 	}
 
 	return retval;

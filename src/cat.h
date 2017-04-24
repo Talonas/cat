@@ -67,6 +67,17 @@ else \
 }
 
 
+#define CAT_SKIP(expression) \
+if (expression) \
+{ \
+	*_ret_MPD8Z7 = TEST_SKIP; \
+	return; \
+} \
+else \
+{ \
+	*_ret_MPD8Z7 = TEST_PASSED; \
+}
+
 #define CAT_CASE(test_name) _TEST_CASE(test_name)
 
 #define CAT_FUNC(test_func_name, ...) _TEST_FUNC(\
