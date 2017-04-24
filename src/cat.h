@@ -27,18 +27,6 @@ else \
 }
 
 
-#define CAT_ASSERT_FINAL(expression) \
-if (expression) \
-{ \
-	return TEST_PASSED; \
-} \
-else \
-{ \
-	_TEST_LOG_FAILURE(CAT_ASSERT_FINAL(expression)); \
-	return TEST_FAIL; \
-}
-
-
 #define CAT_CASE(test_name) _TEST_CASE(test_name)
 
 #define CAT_FUNC(test_func_name, ...) _TEST_FUNC(\
