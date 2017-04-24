@@ -2,7 +2,8 @@
 
 [![CAT Build Status](https://travis-ci.org/Talonas/cat.svg?branch=master)](https://travis-ci.org/Talonas/cat)
 
-A simple and lightweight C test framework.
+A simple and lightweight C test framework. __CAT__ can be interpreted as C Awesome Tests, C Automated Tests, cat or whatever
+you like.
 
 ## Declaring Test Case
 ```c
