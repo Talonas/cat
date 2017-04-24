@@ -4,37 +4,62 @@
 
 A simple and lightweight C test framework.
 
-### Asserts
+## Declaring Test Case
+```c
+CAT_CASE(case)
+{
+	...
+}
+```
 
-Assert | Description
--------|------------
-CAT_ASSERT(expression) | Asserts that condition is true
-CAT_ASSERT_STR_EQUAL(actual, expected) | Asserts that _actual_ equals to _expected_
-CAT_ASSERT_NOT_NULL(ptr) | Asserts that _ptr_ is not NULL
-CAT_ASSERT_NULL(ptr) | Asserts that _ptr_ is NULL
+## Test Skip
+```c
+CAT_SKIP(expression)
+```
 
-### Functions
+## Assertions
+```c
+CAT_ASSERT(expression)
+```
+Asserts that _condition_ is true. Otherwise the test case will fail
 
-Function | Description
--------|------------
-CAT_CASE(name) | Registers a test case
-CAT_FUNC(name, args) | Declares a test function that can be called using `CAT_FUNC_RUN(name)`
-CAT_FUNC_RUN(name, args) | Calls a declared `CAT_FUNC` by name
+```c
+CAT_ASSERT_NULL(ptr)
+```
+Asserts that _ptr_ is NULL
 
-### Samples
+```c
+CAT_ASSERT_NOT_NULL(ptr)
+```
+Asserts that _ptr_ is not NULL
+
+```c
+CAT_ASSERT_STR_EQUAL(actual, expected)
+```
+Asserts that strings _actual_ equals to _expected_
+
+
+## Functions
+
+```c
+CAT_FUNC(name, args)
+{
+	...
+}
+```
+Declares a test function which name is the first argument _name_. Function will pass if all expressions inside will be passed.
+Otherwise, it will fail and the test case will return failure.
+
+```
+CAT_FUNC_RUN(name, args)
+```
+Calls a test function by _name_
+
+## Samples
+
+### Basic
 ```c
 #include "cat.h"
-
-CAT_FUNC(simple_func)
-{
-	CAT_LOG("simple_func is invoked!\n");
-	CAT_ASSERT(1);
-}
-
-CAT_FUNC(compare_numbers, int a, int b)
-{
-	CAT_ASSERT(a == b);
-}
 
 CAT_CASE(test1)
 {
@@ -43,35 +68,22 @@ CAT_CASE(test1)
 
 CAT_CASE(test2)
 {
-	CAT_FUNC_RUN(simple_func);
-	CAT_ASSERT(1);
-}
-
-CAT_CASE(test3)
-{
-	CAT_ASSERT_STR_EQUAL("TEST", "TEST");
-}
-
-CAT_CASE(test4)
-{
-	CAT_FUNC_RUN(compare_numbers, 2, 2);
-	CAT_ASSERT(1);
+	void *ptr = malloc(1);
+	CAT_ASSERT_NOT_NULL(ptr);
 }
 ```
 
-Output should be similar to
+### Using Test Functions
+```c
+#include "cat.h"
 
-```bash
-Running test cases
-  - [PASS] test1
-lib-test.c test_function_simple_func:8: simple_func is invoked!
-  - [PASS] test2
-  - [PASS] test3
-  - [PASS] test4
+CAT_FUNC(compare, int a, int b)
+{
+	CAT_ASSERT(a == b);
+}
 
-Summary   
-	TOTAL      PASSED     FAILED     UNKNOWN   
-	4          4          0          0         
-
-Time elapsed: 0.000128 seconds
+CAT_CASE(test1)
+{
+	CAT_FUNC_RUN(compare, 1, 2);
+}
 ```
