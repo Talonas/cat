@@ -31,7 +31,7 @@ struct test_item
 {
 	struct test_sort_by sort_by;
 	const char *name;
-	enum test_return (*test)(void);
+	void (*test)(int *_ret_MPD8Z7);
 };
 
 
@@ -43,8 +43,7 @@ struct test_item
 #define _TEST_FUNC_TO_NAME(x) test_function_ ## x
 
 #define _TEST_LOG_FAILURE(expression) \
-	fprintf(stderr, "%s:%d %s\n", __FILE__, __LINE__, \
-		_TEST_TO_STRING(expression))
+	CAT_LOG("%s\n",_TEST_TO_STRING(expression))
 
 
 #define _TESTS_REGISTER(_struct_name, _name, _test) \
@@ -73,46 +72,29 @@ __attribute__((used, section("test_case"))) = \
 
 
 #define _TEST_CASE(test_name) \
-static enum test_return _TEST_CASE_TO_NAME(test_name)(void); \
+static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7); \
 _TESTS_REGISTER(test_name ## _case, test_name, \
 	_TEST_CASE_TO_NAME(test_name)); \
-static enum test_return _TEST_CASE_TO_NAME(test_name)(void)
+static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7)
 
 
-#define _TEST_FUNC(test_func_name) \
-static enum test_return _TEST_FUNC_TO_NAME(test_func_name)(void)
+#define _TEST_FUNC(test_func_name, ...) \
+static void _TEST_FUNC_TO_NAME(test_func_name)(int *_ret_MPD8Z7, \
+	## __VA_ARGS__)
 
 
-#define _TEST_FUNC_ARG(test_func_name, arguments) \
-static enum test_return _TEST_FUNC_TO_NAME(test_func_name) arguments
-
-
-#define _TEST_FUNC_RUN(test_func_name) \
-{ \
-	enum test_return _TEST_FUNC_TO_NAME(test_func_name)(void); \
-	{ \
-		enum test_return ret; \
-		ret = _TEST_FUNC_TO_NAME(test_func_name)(); \
-		if (ret != TEST_PASSED) \
-		{ \
-			_TEST_LOG_FAILURE(test_func_name); \
-			return TEST_FAIL; \
-		} \
-	} \
-}
-
-#define _TEST_FUNC_ARG_RUN(test_func_name, arguments) \
+#define _TEST_FUNC_RUN(test_func_name, ...) \
 {\
-	/* anoying variable name to avoid name hiding */ \
-	enum test_return ret_lYTxjBSLpqAa; \
-	ret_lYTxjBSLpqAa = _TEST_FUNC_TO_NAME(test_func_name) arguments; \
+	int ret_lYTxjBSLpqAa; \
+	_TEST_FUNC_TO_NAME(test_func_name)(&ret_lYTxjBSLpqAa, ## __VA_ARGS__); \
 	if (ret_lYTxjBSLpqAa != TEST_PASSED) \
 	{ \
 		_TEST_LOG_FAILURE(test_func_name); \
-		return TEST_FAIL; \
+		*_ret_MPD8Z7 = TEST_FAIL; \
+		return; \
 	} \
+	*_ret_MPD8Z7 = TEST_PASSED; \
 }
-
 
 
 #ifdef __cplusplus

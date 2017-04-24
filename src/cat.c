@@ -50,14 +50,14 @@ test_run_in_process(const struct test_item *item)
 	if (pid == 0)
 	{
 		/* child */
-		ret = item->test();
+		item->test(&ret);
 		exit(ret);
 	}
 
 	if (pid == -1)
 	{
 		/* somehow fork failed, run test local'y */
-		ret = item->test();
+		item->test(&ret);
 	}
 	else
 	{
@@ -94,7 +94,7 @@ test_case_run(const struct test_item *item)
 
 	if (state.single_process == 1)
 	{
-		ret = item->test();
+		item->test(&ret);
 	}
 	else
 	{
