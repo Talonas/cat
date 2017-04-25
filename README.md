@@ -56,6 +56,51 @@ CAT_FUNC_RUN(name, args)
 ```
 Calls a test function by _name_
 
+## Usage
+
+### Build
+
+Just create a sample test source file _test.c_
+```C
+#include "cat.h"
+
+CAT_CASE(test)
+{
+	CAT_ASSERT(1);
+}
+```
+
+Then make a executable test using gcc
+```bash
+gcc -I./src test.c ./src/cat.c -o test
+```
+
+Check if it is working
+```bash
+./test -a
+
+Running test cases
+  - [PASS] test
+
+Summary   
+	TOTAL      PASSED     FAILED     SKIPPED    UNKNOWN   
+	1          1          0          0          0         
+
+Time elapsed: 0.000127 seconds
+
+==================== SUCCESS ====================
+```
+
+### Run Options
+```bash
+Usage: ./test [OPTIONS]
+
+Options:
+  -h        Prints this help
+Test run options:
+  -p        Run tests in single process
+```
+
 ## Samples
 
 ### Basic
