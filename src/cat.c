@@ -189,6 +189,7 @@ help(void)
 		"Test run options:\n"
 		"  -p        Run tests in single process\n"
 		"", state.name);
+	exit(1);
 }
 
 static const struct test_item *
