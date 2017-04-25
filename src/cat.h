@@ -40,6 +40,19 @@ else \
 	*_ret_MPD8Z7 = TEST_PASSED; \
 }
 
+#define CAT_ASSERT_STR_NOT_EQUAL(a, b) \
+int ret = strcmp(a, b); \
+if (ret == 0) \
+{ \
+	_TEST_LOG_FAILURE(CAT_ASSERT_STR_NOT_EQUAL(a, b)); \
+	*_ret_MPD8Z7 = TEST_FAIL; \
+	return; \
+} \
+else \
+{ \
+	*_ret_MPD8Z7 = TEST_PASSED; \
+}
+
 
 #define CAT_ASSERT_NOT_NULL(ptr) \
 if (ptr == NULL) \
