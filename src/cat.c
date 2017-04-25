@@ -276,12 +276,14 @@ main(int argc, char *argv[])
 	{
 		/* Failed */
 		retval = -1;
-		printf("%s==================== FAILED ====================%s\n",
+		printf("%s========================= FAILED "
+			"==========================%s\n",
 			COLOR_RED, COLOR_NORMAL);
 	}
 	else
 	{
-		printf("%s==================== SUCCESS ====================%s\n",
+		printf("%s========================= SUCESS "
+			"==========================%s\n",
 			COLOR_GREEN_BOLD, COLOR_NORMAL);
 	}
 
