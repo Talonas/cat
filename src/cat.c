@@ -155,6 +155,9 @@ static void
 display_summary(void)
 {
 	int total = 0;
+	char *color = COLOR_GREEN_BOLD;
+	char *message = "PASSED";
+
 
 	total = state.results[RESULT_TYPE_PASS] +
 		state.results[RESULT_TYPE_FAIL] +
@@ -178,16 +181,13 @@ display_summary(void)
 	if (state.results[RESULT_TYPE_FAIL] != 0 ||
 	    state.results[RESULT_TYPE_UNKNOWN] != 0)
 	{
-		printf("%s========================= FAILED "
-			"==========================%s\n",
-			COLOR_RED, COLOR_NORMAL);
+		color = COLOR_RED;
+		message = "FAILED";
 	}
-	else
-	{
-		printf("%s========================= SUCESS "
-			"==========================%s\n",
-			COLOR_GREEN_BOLD, COLOR_NORMAL);
-	}
+
+	printf("%s========================= %s "
+		"==========================%s\n",
+		color, message, COLOR_NORMAL);
 }
 
 static void
