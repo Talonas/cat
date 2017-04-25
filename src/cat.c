@@ -34,11 +34,8 @@ static struct
 struct test_result
 {
 	const char *color;
-	const char *message_long;
-	char message_short;
+	const char *message;
 	const struct test_item *item;
-	int ret;
-	int result_type;
 };
 
 static int
@@ -107,28 +104,28 @@ test_case_run(const struct test_item *item)
 	switch (ret)
 	{
 	case TEST_PASSED:
-		result.message_long = "PASS";
+		result.message = "PASS";
 		result.color = COLOR_GREEN;
 		state.results[RESULT_TYPE_PASS]++;
 		break;
 	case TEST_FAIL:
-		result.message_long = "FAIL";
+		result.message = "FAIL";
 		result.color = COLOR_RED;
 		state.results[RESULT_TYPE_FAIL]++;
 		break;
 	case TEST_SKIP:
-		result.message_long = "SKIP";
+		result.message = "SKIP";
 		result.color = COLOR_YELLOW;
 		state.results[RESULT_TYPE_SKIP]++;
 		break;
 	default:
-		result.message_long = "UNKNOWN";
+		result.message = "UNKNOWN";
 		result.color = COLOR_RED;
 		state.results[RESULT_TYPE_UNKNOWN]++;
 		break;
 	}
 
-	printf("  - %s[%s]%s %s\n", result.color, result.message_long,
+	printf("  - %s[%s]%s %s\n", result.color, result.message,
 		COLOR_NORMAL, item->name);
 	fflush(stdout);
 }
