@@ -177,6 +177,20 @@ display_summary(void)
 	printf("\nTime elapsed: %ld.%06ld seconds\n\n",
 		(long int)state.time_elapsed.tv_sec,
 		(long int)state.time_elapsed.tv_usec);
+
+	if (state.results[RESULT_TYPE_FAIL] != 0 ||
+	    state.results[RESULT_TYPE_UNKNOWN] != 0)
+	{
+		printf("%s========================= FAILED "
+			"==========================%s\n",
+			COLOR_RED, COLOR_NORMAL);
+	}
+	else
+	{
+		printf("%s========================= SUCESS "
+			"==========================%s\n",
+			COLOR_GREEN_BOLD, COLOR_NORMAL);
+	}
 }
 
 static void
@@ -231,6 +245,7 @@ main(int argc, char *argv[])
 {
 	int i;
 	int retval = 0;
+	int tests_running = 0;
 	const struct test_item *test = NULL;
 
 
@@ -248,6 +263,7 @@ main(int argc, char *argv[])
 				state.single_process = 1;
 				break;
 			case 'a':
+				tests_running = 1;
 				test_run_all();
 				break;
 			case 'l':
@@ -267,27 +283,22 @@ main(int argc, char *argv[])
 			}
 			else
 			{
+				tests_running = 1;
 				test_case_run(test);
 			}
 		}
 	}
 
-	display_summary();
+	if (tests_running == 1)
+	{
+		display_summary();
+	}
 
 	if (state.results[RESULT_TYPE_FAIL] != 0 ||
 	    state.results[RESULT_TYPE_UNKNOWN] != 0)
 	{
 		/* Failed */
 		retval = -1;
-		printf("%s========================= FAILED "
-			"==========================%s\n",
-			COLOR_RED, COLOR_NORMAL);
-	}
-	else
-	{
-		printf("%s========================= SUCESS "
-			"==========================%s\n",
-			COLOR_GREEN_BOLD, COLOR_NORMAL);
 	}
 
 	return retval;
