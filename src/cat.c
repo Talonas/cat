@@ -182,11 +182,13 @@ display_summary(void)
 static void
 help(void)
 {
-	printf("Usage: %s [OPTIONS]\n"
+	printf("Usage: %s [OPTIONS] [TEST, ...]\n"
 		"\n"
 		"Options:\n"
 		"  -h        Prints this help\n"
+		"  -l        Lists all declared unit tests\n"
 		"Test run options:\n"
+		"  -a        Run all tests\n"
 		"  -p        Run tests in single process\n"
 		"", state.name);
 	exit(1);
