@@ -6,12 +6,14 @@ extern "C"
 {
 #endif
 
-int lib_init(void);
-void lib_deinit(void);
+char *prod_merge_two_strings(const char *str1, const char *str2,
+	const char *separator);
 
-int lib_get_number(void);
+int prod_get_number_seven(void);
 
-int lib_set_str(char *val, size_t val_size);
+int prod_multiple_numbers(int a, int b);
+
+int prod_compose_numbers(int a, int b);
 
 #ifdef __cplusplus
 }
