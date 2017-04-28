@@ -2,8 +2,14 @@
 
 [![CAT Build Status](https://travis-ci.org/Talonas/cat.svg?branch=master)](https://travis-ci.org/Talonas/cat)
 
-A simple and lightweight C test framework. __CAT__ can be interpreted as C Awesome Tests, C Automated Tests, cat or whatever
-you like.
+CAT is a lightweight and simple framework for writing tests in C. __CAT__ can be interpreted
+as C Awesome Tests, C Automated Tests, cat or whatever you like.
+
+## Supported Platforms
+
+- __Linux__ with a gcc
+- __Mac OS X__ - not supported
+- __Windows__ - not supported
 
 ## Declaring Test Case
 ```c
@@ -98,11 +104,12 @@ Time elapsed: 0.000127 seconds
 
 ### Run Options
 ```bash
-Usage: ./test [OPTIONS]
+Usage: ./test [OPTIONS] [TEST, ...]
 
 Options:
   -h        Prints this help
-Test run options:
+  -l        Lists all declared unit tests
+  -a        Run all tests
   -p        Run tests in single process
 ```
 
