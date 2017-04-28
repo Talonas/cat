@@ -17,6 +17,7 @@ CAT_CASE(case)
 ```c
 CAT_SKIP(expression)
 ```
+Skips the test if evaluates expression.
 
 ## Assertions
 ```c
@@ -39,6 +40,10 @@ CAT_ASSERT_STR_EQUAL(actual, expected)
 ```
 Asserts that strings _actual_ equals to _expected_
 
+```c
+CAT_ASSERT_STR_NOT_EQUAL(str1, str2)
+```
+Compares _str1_ with _str2_. Passes when they are not equal. Otherwise the test will fail.
 
 ## Functions
 
@@ -51,7 +56,7 @@ CAT_FUNC(name, args)
 Declares a test function which name is the first argument _name_. Function will pass if all expressions inside will be passed.
 Otherwise, it will fail and the test case will return failure.
 
-```
+```c
 CAT_FUNC_RUN(name, args)
 ```
 Calls a test function by _name_
