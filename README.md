@@ -132,6 +132,10 @@ CAT_CASE(test2)
 ```
 
 ### Using Test Functions
+Test functions can be a good friend in order to avoid duplicated
+source code in each test case. If a test function will fail - the
+unit test will be failed also.
+
 ```c
 #include "cat.h"
 
