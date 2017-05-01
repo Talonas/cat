@@ -99,6 +99,9 @@ else \
 #define CAT_FUNC_RUN(test_func_name, ...) \
 	_TEST_FUNC_RUN(test_func_name, ## __VA_ARGS__)
 
+#define CAT_MOCK(orig, mock) _TEST_MOCK(orig, mock)
+
+#define CAT_UNMOCK(orig) _TEST_UNMOCK(orig)
 
 #ifdef __cplusplus
 }

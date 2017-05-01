@@ -8,6 +8,10 @@ extern "C"
 
 #include <string.h>
 #include <stdint.h>
+#include <unistd.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <sys/mman.h>
 
 enum test_return
 {
@@ -96,6 +100,19 @@ static void _TEST_FUNC_TO_NAME(test_func_name)(int *_ret_MPD8Z7, \
 	*_ret_MPD8Z7 = TEST_PASSED; \
 }
 
+#define _TEST_MOCK(orig, mock) _cat_mock(orig, mock)
+#define _TEST_UNMOCK(orig) _cat_unmock(orig)
+
+#define STUB_SIZE 5+sizeof(void*)
+
+void _cat_ptr_data_copy(unsigned char *ptr1, unsigned char *ptr2,
+	size_t size);
+struct mocked_func *_cat_search_mocked_func(void *addr);
+int _cat_unprotect_address(void *addr);
+struct mocked_func * cat_create_mocked_func(void);
+void _cat_rewrite_func(void *ptr, void *dst);
+void _cat_mock(void *orig, void *mock);
+void _cat_unmock(void *orig);
 
 #ifdef __cplusplus
 }
