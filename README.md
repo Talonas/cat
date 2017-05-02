@@ -92,7 +92,7 @@ CAT_CASE(sample1)
 {
 	void *ptr = NULL;
 
-	CAT_MOCK(malloc, malloc_mock);
+	CAT_MOCK(malloc, mallock_mock);
 	ptr = malloc(32);
 	CAT_ASSERT_NULL(ptr);
 
