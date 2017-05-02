@@ -1,9 +1,13 @@
 # Examples
 
-## Example 1
-
-Basic usage of __CAT_CASE__ and _asserts_
+## Build & Run
 ### Build
+Build all tests
+```bash
+make all
+```
+
+Or _test_example-1_
 ```bash
 make test-example-1
 ```
@@ -13,29 +17,18 @@ make test-example-1
 ./test-example-1 -a
 ```
 
+## Example 1
+
+Basic usage of __CAT_CASE__ and _asserts_
+
 ## Example 2
 
 Shows how tu use __CAT_FUNC__. It can have a great value to eliminate duplicated test source.
-### Build
-```bash
-make test-example-2
-```
-
-### Run
-```bash
-./test-example-2 -a
-```
 
 ## Example 3
 
 Tests the _prod_ source. In this example some tests will pass, fail and crash.
 
-### Build
-```bash
-make test-example-3
-```
+## Example 4
 
-### Run
-```bash
-./test-example-3 -a
-```
+Few simple mocking examples.
