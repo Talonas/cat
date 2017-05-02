@@ -38,11 +38,29 @@ struct test_item
 	void (*test)(int *_ret_MPD8Z7);
 };
 
+struct before_each_item
+{
+	struct test_sort_by sort_by;
+	const char *name;
+	void (*func)(void);
+};
+
+struct after_each_item
+{
+	struct test_sort_by sort_by;
+	const char *name;
+	void (*func)(void);
+};
+
 
 #define _TEST_TO_STRING_(x) #x
 #define _TEST_TO_STRING(x) _TEST_TO_STRING_(x)
 
 #define _TEST_CASE_TO_NAME(x) test_case_ ## x
+
+#define _TEST_BEFORE_EACH_TO_NAME(x) test_before_each_ ## x
+
+#define _TEST_AFTER_EACH_TO_NAME(x) test_after_each_ ## x
 
 #define _TEST_FUNC_TO_NAME(x) test_function_ ## x
 
@@ -58,6 +76,28 @@ __attribute__((used, section("test_case"))) = \
 	.sort_by.counter = __COUNTER__, \
 	.name = _TEST_TO_STRING_(_name), \
 	.test = _test, \
+};
+
+
+#define _TEST_BEFORE_EACH_REGISTER(_struct_name, _name, _func) \
+static struct before_each_item _struct_name \
+__attribute__((used, section("test_before_each"))) = \
+{ \
+	.sort_by.file.name = __FILE__, \
+	.sort_by.counter = __COUNTER__, \
+	.name = _TEST_TO_STRING_(_name), \
+	.func = _func, \
+};
+
+
+#define _TEST_AFTER_EACH_REGISTER(_struct_name, _name, _func) \
+static struct after_each_item _struct_name \
+__attribute__((used, section("test_after_each"))) = \
+{ \
+	.sort_by.file.name = __FILE__, \
+	.sort_by.counter = __COUNTER__, \
+	.name = _TEST_TO_STRING_(_name), \
+	.func = _func, \
 };
 
 
@@ -80,6 +120,20 @@ static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7); \
 _TESTS_REGISTER(test_name ## _case, test_name, \
 	_TEST_CASE_TO_NAME(test_name)); \
 static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7)
+
+
+#define _TEST_BEFORE_EACH(name) \
+static void _TEST_BEFORE_EACH_TO_NAME(name)(void); \
+_TEST_BEFORE_EACH_REGISTER(name ## _before_each, name, \
+	_TEST_BEFORE_EACH_TO_NAME(name)); \
+static void _TEST_BEFORE_EACH_TO_NAME(name)(void)
+
+
+#define _TEST_AFTER_EACH(name) \
+static void _TEST_AFTER_EACH_TO_NAME(name)(void); \
+_TEST_AFTER_EACH_REGISTER(name ## _after_each, name, \
+	_TEST_AFTER_EACH_TO_NAME(name)); \
+static void _TEST_AFTER_EACH_TO_NAME(name)(void)
 
 
 #define _TEST_FUNC(test_func_name, ...) \

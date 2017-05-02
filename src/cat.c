@@ -53,6 +53,8 @@ static void help(void);
 static const struct test_item *test_search(const char *name);
 static void show_tests(void);
 static void deinit_mocked_functions(void);
+static void run_before_each(void);
+static void run_after_each(void);
 
 static struct mocked_func *mocked_func = NULL;
 
@@ -247,7 +249,9 @@ test_run_in_process(const struct test_item *item)
 	if (pid == 0)
 	{
 		/* child */
+		run_before_each();
 		item->test(&ret);
+		run_after_each();
 		deinit_mocked_functions();
 		exit(ret);
 	}
@@ -284,6 +288,28 @@ test_run_in_process(const struct test_item *item)
 }
 
 static void
+run_before_each(void)
+{
+	const struct before_each_item *item = NULL;
+
+	_FOREACH_TEST(item, test_before_each, struct before_each_item)
+	{
+		item->func();
+	}
+}
+
+static void
+run_after_each(void)
+{
+	const struct after_each_item *item = NULL;
+
+	_FOREACH_TEST(item, test_after_each, struct after_each_item)
+	{
+		item->func();
+	}
+}
+
+static void
 test_case_run(const struct test_item *item)
 {
 	struct test_result result;
@@ -292,7 +318,9 @@ test_case_run(const struct test_item *item)
 
 	if (state.single_process == 1)
 	{
+		run_before_each();
 		item->test(&ret);
+		run_after_each();
 	}
 	else
 	{
