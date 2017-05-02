@@ -38,14 +38,7 @@ struct test_item
 	void (*test)(int *_ret_MPD8Z7);
 };
 
-struct before_each_item
-{
-	struct test_sort_by sort_by;
-	const char *name;
-	void (*func)(void);
-};
-
-struct after_each_item
+struct test_each_item
 {
 	struct test_sort_by sort_by;
 	const char *name;
@@ -80,7 +73,7 @@ __attribute__((used, section("test_case"))) = \
 
 
 #define _TEST_BEFORE_EACH_REGISTER(_struct_name, _name, _func) \
-static struct before_each_item _struct_name \
+static struct test_each_item _struct_name \
 __attribute__((used, section("test_before_each"))) = \
 { \
 	.sort_by.file.name = __FILE__, \
@@ -91,7 +84,7 @@ __attribute__((used, section("test_before_each"))) = \
 
 
 #define _TEST_AFTER_EACH_REGISTER(_struct_name, _name, _func) \
-static struct after_each_item _struct_name \
+static struct test_each_item _struct_name \
 __attribute__((used, section("test_after_each"))) = \
 { \
 	.sort_by.file.name = __FILE__, \

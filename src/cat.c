@@ -290,9 +290,9 @@ test_run_in_process(const struct test_item *item)
 static void
 run_before_each(void)
 {
-	const struct before_each_item *item = NULL;
+	const struct test_each_item *item = NULL;
 
-	_FOREACH_TEST(item, test_before_each, struct before_each_item)
+	_FOREACH_TEST(item, test_before_each, struct test_each_item)
 	{
 		item->func();
 	}
@@ -301,9 +301,9 @@ run_before_each(void)
 static void
 run_after_each(void)
 {
-	const struct after_each_item *item = NULL;
+	const struct test_each_item *item = NULL;
 
-	_FOREACH_TEST(item, test_after_each, struct after_each_item)
+	_FOREACH_TEST(item, test_after_each, struct test_each_item)
 	{
 		item->func();
 	}
