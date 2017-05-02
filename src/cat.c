@@ -478,6 +478,18 @@ deinit_mocked_functions(void)
 	}
 }
 
+/* register empty */
+CAT_BEFORE_EACH(dummy_ulWrxnsWbplaOTpA)
+{
+	return;
+}
+
+/* register empty */
+CAT_AFTER_EACH(dummy_2TDU1qc96gy8Vgfp)
+{
+	return;
+}
+
 int
 main(int argc, char *argv[])
 {
