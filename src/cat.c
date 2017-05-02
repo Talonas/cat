@@ -38,6 +38,203 @@ struct test_result
 	const struct test_item *item;
 };
 
+struct mocked_func
+{
+	struct mocked_func *next;
+	void *addr;
+	unsigned char addr_orig[STUB_SIZE];
+};
+
+static int test_run_in_process(const struct test_item *item);
+static void test_case_run(const struct test_item *item);
+static void test_run_all(void);
+static void display_summary(void);
+static void help(void);
+static const struct test_item *test_search(const char *name);
+static void show_tests(void);
+static void deinit_mocked_functions(void);
+
+static struct mocked_func *mocked_func = NULL;
+
+
+void
+_cat_ptr_data_copy(unsigned char *ptr1, unsigned char *ptr2, size_t size)
+{
+	size_t i;
+	for (i = 0; i < size; i++)
+	{
+		ptr1[i] = ptr2[i];
+	}
+}
+
+struct mocked_func *
+_cat_search_mocked_func(void *addr)
+{
+	struct mocked_func *retval = NULL;
+	struct mocked_func *mf = NULL;
+	int ret;
+
+
+	mf = mocked_func;
+
+	while (1)
+	{
+		if (mf == NULL)
+		{
+			break;
+		}
+
+		ret = memcmp(mf->addr, addr, STUB_SIZE);
+		if (ret == 0)
+		{
+			retval = mf;
+			goto done;
+		}
+
+		mf = mf->next;
+	}
+done:
+	return retval;
+}
+
+int
+_cat_unprotect_address(void *addr)
+{
+	int retval = -1;
+	int ret;
+	unsigned char *pg;
+	long psize;
+
+
+	pg = (unsigned char *)(addr - ((size_t)addr % 4096));
+
+	ret = mprotect(pg, 128, PROT_READ | PROT_WRITE | PROT_EXEC);
+	if (ret != 0)
+	{
+		fprintf(stderr, "ERROR: mprotect() failed: %d: %d: %sn", ret,
+			errno, strerror(errno));
+		goto done;
+	}
+
+	psize = sysconf(_SC_PAGESIZE);
+	ret = mprotect(pg + psize, 128, PROT_WRITE|PROT_READ|PROT_EXEC);
+	if (ret != 0)
+	{
+		fprintf(stderr, "ERROR: mprotect() failed: %d: %d: %sn", ret,
+			errno, strerror(errno));
+		goto done;
+	}
+
+	retval = 0;
+done:
+	return retval;
+}
+
+struct mocked_func *
+cat_create_mocked_func(void)
+{
+	struct mocked_func *retval = NULL;
+	struct mocked_func *mf = NULL;
+
+
+	mf = malloc(sizeof(*mf));
+	if (mf == NULL)
+	{
+		fprintf(stderr, "malloc failed\n");
+		goto done;
+	}
+
+	mf->next = mocked_func;
+	mocked_func = mf;
+
+	retval = mf;
+done:
+	return retval;
+}
+
+void
+_cat_rewrite_func(void *ptr, void *dst)
+{
+#ifdef __amd64__
+	unsigned char jumpf[16] = {
+		0x48, 0xb8,
+		0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+		0x50, 0xc3,
+	};
+	unsigned char *addr = jumpf + 2;
+	(*(void **)(addr)) = dst;
+	_cat_ptr_data_copy(ptr, jumpf, STUB_SIZE);
+#elif __i386__
+#define HIJACK_ADDR(x) *(void**)((x) + 1)
+	static const char hijack_stub[8] = {
+		0x68, 0x00, 0x00, 0x00, 0x00, 0xc3
+	};
+	_cat_ptr_data_copy(ptr, hijack_stub, STUB_SIZE);
+	HIJACK_ADDR(addr) = dst;
+#endif
+}
+
+void
+_cat_mock(void *orig, void *mock)
+{
+	int ret;
+	struct mocked_func *mf = NULL;
+
+
+	mf = _cat_search_mocked_func(orig);
+	if (mf == NULL)
+	{
+		mf = cat_create_mocked_func();
+		if (mf == NULL)
+		{
+			goto done;
+		}
+	}
+	else
+	{
+		if (memcmp(mock, mf->addr_orig, STUB_SIZE) == 0)
+		{
+			goto done;
+		}
+	}
+
+	ret = _cat_unprotect_address(orig);
+	if (ret != 0)
+	{
+		goto done;
+	}
+
+	_cat_ptr_data_copy(mf->addr_orig, orig, STUB_SIZE);
+	_cat_rewrite_func(orig, mock);
+	mf->addr = orig;
+
+done:
+	return;
+}
+
+void
+_cat_unmock(void *orig)
+{
+	struct mocked_func *mf = NULL;
+
+	mf = _cat_search_mocked_func(orig);
+	if (mf == NULL)
+	{
+		goto done;
+	}
+
+	if (mf->addr == NULL)
+	{
+		goto done;
+	}
+
+	_cat_ptr_data_copy(mf->addr, mf->addr_orig, STUB_SIZE);
+	memset(mf->addr_orig, 0, STUB_SIZE);
+done:
+	return;
+}
+
+
 static int
 test_run_in_process(const struct test_item *item)
 {
@@ -51,6 +248,7 @@ test_run_in_process(const struct test_item *item)
 	{
 		/* child */
 		item->test(&ret);
+		deinit_mocked_functions();
 		exit(ret);
 	}
 
@@ -147,8 +345,9 @@ test_run_all(void)
 	}
 
 	gettimeofday(&end, NULL);
-
 	timersub(&end, &start, &state.time_elapsed);
+
+	deinit_mocked_functions();
 }
 
 static void
@@ -237,6 +436,20 @@ show_tests(void)
 	}
 }
 
+static void
+deinit_mocked_functions(void)
+{
+	struct mocked_func *mf = mocked_func;
+	struct mocked_func *mf_next;
+
+	while (mf != NULL)
+	{
+		mf_next = mf->next;
+		free(mf);
+		mf = mf_next;
+	}
+}
+
 int
 main(int argc, char *argv[])
 {
@@ -245,6 +458,8 @@ main(int argc, char *argv[])
 	int tests_running = 0;
 	const struct test_item *test = NULL;
 
+	(void)&_cat_mock;
+	(void)&_cat_unmock;
 
 	state.single_process = 0;
 	state.name = argv[0];

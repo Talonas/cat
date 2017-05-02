@@ -47,3 +47,9 @@ prod_compose_numbers(int a, int b)
 {
 	return a + b - 1;
 }
+
+static int
+prod_static_return_7(void)
+{
+	return 7;
+}

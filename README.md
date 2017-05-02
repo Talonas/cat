@@ -67,6 +67,43 @@ CAT_FUNC_RUN(name, args)
 ```
 Calls a test function by _name_
 
+## Mocking
+
+```c
+CAT_MOCK(original, mocked_func)
+```
+Mocks an _original_ function with _mocked_func_.
+
+```c
+CAT_UNMOCK(original)
+```
+Restores _original_ mocked function.
+
+```c
+
+static void *
+mallock_mock(size_t size)
+{
+	(void)size;
+	return NULL;
+}
+
+CAT_CASE(sample1)
+{
+	void *ptr = NULL;
+
+	CAT_MOCK(malloc, malloc_mock);
+	ptr = malloc(32);
+	CAT_ASSERT_NULL(ptr);
+
+	CAT_UNMOCK(malloc);
+	ptr = malloc(32);
+	CAT_ASSERT_NOT_NULL(ptr);
+	
+	free(ptr);
+}
+```
+
 ## Usage
 
 ### Build
