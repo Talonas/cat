@@ -93,6 +93,10 @@ else \
 
 #define CAT_CASE(test_name) _TEST_CASE(test_name)
 
+#define CAT_BEFORE_EACH(name) _TEST_BEFORE_EACH(name)
+
+#define CAT_AFTER_EACH(name) _TEST_AFTER_EACH(name)
+
 #define CAT_FUNC(test_func_name, ...) _TEST_FUNC(\
 	test_func_name, ## __VA_ARGS__)
 
