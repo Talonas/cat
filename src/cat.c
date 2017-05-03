@@ -470,11 +470,12 @@ help(void)
 	printf("Usage: %s [OPTIONS] [TEST, ...]\n"
 		"\n"
 		"Options:\n"
-		"  -h        Prints this help\n"
-		"  -l        Lists all declared unit tests\n"
+		"  -h                Prints this help\n"
+		"  -l                Lists all declared unit tests\n"
 		"Test run options:\n"
-		"  -a        Run all tests\n"
-		"  -p        Run tests in single process\n"
+		"  -a                Run all tests\n"
+		"  -p                Run tests in single process\n"
+		"  -s [SUITE, ...]   Run test suites\n"
 		"", state.name);
 	exit(1);
 }
@@ -507,16 +508,18 @@ show_tests(void)
 	int ret;
 
 
+	printf("Tests:\n");
+
 	_FOREACH_TEST(item, test_case, struct test_item)
 	{
 		ret = strlen(item->suite);
 		if (ret != 0)
 		{
-			printf("%s [%s]\n", item->name, item->suite);
+			printf("  - %s [%s]\n", item->name, item->suite);
 		}
 		else
 		{
-			printf("%s\n", item->name);
+			printf("  - %s []\n", item->name);
 		}
 	}
 }
