@@ -56,6 +56,23 @@ CAT_ASSERT_STR_NOT_EQUAL(str1, str2)
 ```
 Compares _str1_ with _str2_. Passes when they are not equal. Otherwise the test will fail.
 
+## Before/After Each
+```c
+CAT_BEFORE_EACH()
+{
+	...
+}
+```
+Function to be executed before each `CAT_CASE`.
+
+```c
+CAT_AFTER_EACH()
+{
+	...
+}
+```
+Function to be executed after each `CAT_CASE`.
+
 ## Functions
 
 ```c
@@ -77,12 +94,12 @@ Calls a test function by _name_
 ```c
 CAT_MOCK(original, mocked_func)
 ```
-Mocks an _original_ function with _mocked_func_.
+Declare mock behavior for an external resource.
 
 ```c
 CAT_UNMOCK(original)
 ```
-Restores _original_ mocked function.
+Restores mocked behaviour to original.
 
 ```c
 
