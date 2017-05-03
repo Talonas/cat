@@ -144,10 +144,12 @@ Time elapsed: 0.000127 seconds
 Usage: ./test [OPTIONS] [TEST, ...]
 
 Options:
-  -h        Prints this help
-  -l        Lists all declared unit tests
-  -a        Run all tests
-  -p        Run tests in single process
+  -h                Prints this help
+  -l                Lists all declared unit tests
+Run options:
+  -a                Run all tests
+  -p                Run tests in single process
+  -s [SUITE, ...]   Run test suites
 ```
 
 ## Samples
