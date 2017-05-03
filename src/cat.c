@@ -472,7 +472,7 @@ help(void)
 		"Options:\n"
 		"  -h                Prints this help\n"
 		"  -l                Lists all declared unit tests\n"
-		"Test run options:\n"
+		"Run options:\n"
 		"  -a                Run all tests\n"
 		"  -p                Run tests in single process\n"
 		"  -s [SUITE, ...]   Run test suites\n"
