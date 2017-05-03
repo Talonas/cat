@@ -32,3 +32,18 @@ Tests the _prod_ source. In this example some tests will pass, fail and crash.
 ## Example 4
 
 Few simple mocking examples.
+
+## Example 5
+
+Shows how to use test suites.
+
+To run a single test suite:
+
+```c
+./test-example-5 -s suite1
+```
+
+To run more suites:
+```c
+./test-example-5 -s suite1 suite2
+```

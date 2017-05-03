@@ -38,11 +38,17 @@ OBJ_EXAMPLE_4 = \
 	./tests/test-example-4.o
 
 
+OBJ_EXAMPLE_5 = \
+	../src/cat.o \
+	./tests/test-example-5.o
+
+
 TARGETS = \
 	test-example-1 \
 	test-example-2 \
 	test-example-3 \
 	test-example-4 \
+	test-example-5 \
 
 
 all: $(TARGETS)
@@ -59,8 +65,15 @@ test-example-3: $(OBJ_EXAMPLE_3)
 test-example-4: $(OBJ_EXAMPLE_4)
 	$(CC) $(LDFLAGS) $(OBJ_EXAMPLE_4) $(LDLIBS) -o $@
 
+test-example-5: $(OBJ_EXAMPLE_5)
+	$(CC) $(LDFLAGS) $(OBJ_EXAMPLE_5) $(LDLIBS) -o $@
+
 clean:
 	rm -fr $(TARGETS) $(OBJ_EXAMPLE_1) $(OBJ_EXAMPLE_2) \
-		$(OBJ_EXAMPLE_3) $(OBJ_EXAMPLE_4)
+		$(OBJ_EXAMPLE_3) $(OBJ_EXAMPLE_4) \
+		tests/*.gcda tests/*.gcno \
+		src/*.gcda src/*.gcno \
+		../src/*.gcda ../src/*.gcno \
+
 
 .PHONY: all clean
