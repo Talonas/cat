@@ -507,7 +507,7 @@ run_test_suite(const char *suite)
 	struct timeval start;
 	struct timeval end;
 	int ret;
-	char item_suite[128];
+
 
 	printf("\nRunning test suite \"%s\"\n", suite);
 
@@ -515,16 +515,7 @@ run_test_suite(const char *suite)
 
 	_FOREACH_TEST(item, test_case, struct test_item)
 	{
-		ret = strlen(item->suite);
-		if (ret < 2)
-		{
-			continue;
-		}
-
-		memset(item_suite, 0, sizeof(item_suite));
-		memcpy(item_suite, item->suite + 1, strlen(item->suite) - 2);
-
-		ret = strcmp(suite, item_suite);
+		ret = strcmp(suite, item->suite);
 		if (ret != 0)
 		{
 			continue;
