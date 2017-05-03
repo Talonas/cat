@@ -5,18 +5,23 @@
 CAT is a lightweight and simple framework for writing tests in C. __CAT__ can be interpreted
 as C Awesome Tests, C Automated Tests, cat or whatever you like.
 
-## Supported Platforms
+## Platforms
 
-- __Linux__ with a gcc
-- __Mac OS X__ - not supported
-- __Windows__ - not supported
+- __Linux__
+- __Mac OS X__ not supported
+- __Windows__ not supported
 
-## Declaring Test Case
+## Test Case
 ```c
-CAT_CASE(case)
+CAT_CASE(test_case_name)
 {
 	...
 }
+```
+
+## Test Suites
+```c
+CAT_CASE(test_case_name, test_suite_name)
 ```
 
 ## Test Skip
