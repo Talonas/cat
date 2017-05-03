@@ -152,6 +152,9 @@ Options:
 
 ## Samples
 
+### Examples
+For detailed information and usage see samples in `examples` directory.
+
 ### Basic
 ```c
 #include "cat.h"
