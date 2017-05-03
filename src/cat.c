@@ -55,6 +55,9 @@ static void show_tests(void);
 static void deinit_mocked_functions(void);
 static void run_before_each(void);
 static void run_after_each(void);
+static void test_run_suites(char **suites, int count);
+static void run_test_suite(const char *suite);
+static void test_run_tests(char **tests, int count);
 
 static struct mocked_func *mocked_func = NULL;
 
@@ -379,6 +382,50 @@ test_run_all(void)
 }
 
 static void
+test_run_tests(char **tests, int count)
+{
+	int i;
+	const struct test_item *test = NULL;
+	struct timeval start;
+	struct timeval end;
+
+
+	gettimeofday(&start, NULL);
+
+	for (i = 0; i < count; i++)
+	{
+		test = test_search(tests[i]);
+		if (test == NULL)
+		{
+			printf("Test \"%s\" can't be found\n", tests[i]);
+			continue;
+		}
+		test_case_run(test);
+	}
+
+	gettimeofday(&end, NULL);
+	timersub(&end, &start, &state.time_elapsed);
+}
+
+static void
+test_run_suites(char **suites, int count)
+{
+	int i;
+	struct timeval start;
+	struct timeval end;
+
+	gettimeofday(&start, NULL);
+
+	for (i = 0; i < count; i++)
+	{
+		run_test_suite(suites[i]);
+	}
+
+	gettimeofday(&end, NULL);
+	timersub(&end, &start, &state.time_elapsed);
+}
+
+static void
 display_summary(void)
 {
 	int total = 0;
@@ -423,11 +470,12 @@ help(void)
 	printf("Usage: %s [OPTIONS] [TEST, ...]\n"
 		"\n"
 		"Options:\n"
-		"  -h        Prints this help\n"
-		"  -l        Lists all declared unit tests\n"
+		"  -h                Prints this help\n"
+		"  -l                Lists all declared unit tests\n"
 		"Test run options:\n"
-		"  -a        Run all tests\n"
-		"  -p        Run tests in single process\n"
+		"  -a                Run all tests\n"
+		"  -p                Run tests in single process\n"
+		"  -s [SUITE, ...]   Run test suites\n"
 		"", state.name);
 	exit(1);
 }
@@ -457,10 +505,22 @@ static void
 show_tests(void)
 {
 	const struct test_item *item = NULL;
+	int ret;
+
+
+	printf("Tests:\n");
 
 	_FOREACH_TEST(item, test_case, struct test_item)
 	{
-		printf("%s\n", item->name);
+		ret = strlen(item->suite);
+		if (ret != 0)
+		{
+			printf("  - %s [%s]\n", item->name, item->suite);
+		}
+		else
+		{
+			printf("  - %s []\n", item->name);
+		}
 	}
 }
 
@@ -490,16 +550,44 @@ CAT_AFTER_EACH(dummy_2TDU1qc96gy8Vgfp)
 	return;
 }
 
+static void
+run_test_suite(const char *suite)
+{
+	const struct test_item *item = NULL;
+	struct timeval start;
+	struct timeval end;
+	int ret;
+
+
+	printf("\nRunning test suite \"%s\"\n", suite);
+
+	gettimeofday(&start, NULL);
+
+	_FOREACH_TEST(item, test_case, struct test_item)
+	{
+		ret = strcmp(suite, item->suite);
+		if (ret != 0)
+		{
+			continue;
+		}
+
+		test_case_run(item);
+	}
+
+	gettimeofday(&end, NULL);
+	timersub(&end, &start, &state.time_elapsed);
+
+	deinit_mocked_functions();
+}
+
 int
 main(int argc, char *argv[])
 {
 	int i;
 	int retval = 0;
-	int tests_running = 0;
-	const struct test_item *test = NULL;
+	int index;
+	int mode = 0;
 
-	(void)&_cat_mock;
-	(void)&_cat_unmock;
 
 	state.single_process = 0;
 	state.name = argv[0];
@@ -507,6 +595,11 @@ main(int argc, char *argv[])
 
 	for (i = 1; i < argc; i++)
 	{
+		if (mode != 0)
+		{
+			break;
+		}
+
 		if (argv[i][0] == '-')
 		{
 			switch (argv[i][1])
@@ -515,11 +608,14 @@ main(int argc, char *argv[])
 				state.single_process = 1;
 				break;
 			case 'a':
-				tests_running = 1;
-				test_run_all();
+				mode = 1;
 				break;
 			case 'l':
 				show_tests();
+				break;
+			case 's':
+				mode = 2;
+				index = i + 1;
 				break;
 			case 'h':
 			default:
@@ -528,22 +624,34 @@ main(int argc, char *argv[])
 		}
 		else
 		{
-			test = test_search(argv[i]);
-			if (test == NULL)
-			{
-				printf("Test \"%s\" can't be found\n", argv[i]);
-			}
-			else
-			{
-				tests_running = 1;
-				test_case_run(test);
-			}
+			mode = 3;
+			index = i;
+			break;
 		}
 	}
 
-	if (tests_running == 1)
+	switch (mode)
 	{
+	case 1:
+		test_run_all();
+		break;
+	case 2:
+		test_run_suites(argv + index, argc - index);
+		break;
+	case 3:
+		test_run_tests(argv + index, argc - index);
+		break;
+	default:
+		break;
+	}
+
+	switch (mode)
+	{
+	case 1:
+	case 2:
+	case 3:
 		display_summary();
+		break;
 	}
 
 	if (state.results[RESULT_TYPE_FAIL] != 0 ||

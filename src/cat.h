@@ -91,7 +91,7 @@ else \
 	*_ret_MPD8Z7 = TEST_PASSED; \
 }
 
-#define CAT_CASE(test_name) _TEST_CASE(test_name)
+#define CAT_CASE(test_name, ...) _TEST_CASE(test_name, __VA_ARGS__)
 
 #define CAT_BEFORE_EACH(name) _TEST_BEFORE_EACH(name)
 
