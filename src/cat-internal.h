@@ -13,6 +13,10 @@ extern "C"
 #include <stdlib.h>
 #include <sys/mman.h>
 
+#ifndef __COUNTER__
+#define __COUNTER__ __LINE__
+#endif
+
 enum test_return
 {
 	TEST_PASSED = 0xad,
@@ -35,6 +39,7 @@ struct test_item
 {
 	struct test_sort_by sort_by;
 	const char *name;
+	const char *suite;
 	void (*test)(int *_ret_MPD8Z7);
 };
 
@@ -61,20 +66,23 @@ struct test_each_item
 	CAT_LOG("%s\n",_TEST_TO_STRING(expression))
 
 
-#define _TESTS_REGISTER(_struct_name, _name, _test) \
+#define _TESTS_REGISTER(_struct_name, _name, _test, _suite) \
 static struct test_item _struct_name \
-__attribute__((used, section("test_case"))) = \
+__attribute__((used, section("test_case"), \
+	aligned(sizeof(void *)))) = \
 { \
 	.sort_by.file.name = __FILE__, \
 	.sort_by.counter = __COUNTER__, \
 	.name = _TEST_TO_STRING_(_name), \
+	.suite = _TEST_TO_STRING(_suite), \
 	.test = _test, \
 };
 
 
 #define _TEST_BEFORE_EACH_REGISTER(_struct_name, _name, _func) \
 static struct test_each_item _struct_name \
-__attribute__((used, section("test_before_each"))) = \
+__attribute__((used, section("test_before_each"), \
+	aligned(sizeof(void *)))) = \
 { \
 	.sort_by.file.name = __FILE__, \
 	.sort_by.counter = __COUNTER__, \
@@ -85,7 +93,8 @@ __attribute__((used, section("test_before_each"))) = \
 
 #define _TEST_AFTER_EACH_REGISTER(_struct_name, _name, _func) \
 static struct test_each_item _struct_name \
-__attribute__((used, section("test_after_each"))) = \
+__attribute__((used, section("test_after_each"), \
+	aligned(sizeof(void *)))) = \
 { \
 	.sort_by.file.name = __FILE__, \
 	.sort_by.counter = __COUNTER__, \
@@ -108,10 +117,10 @@ __attribute__((used, section("test_after_each"))) = \
 	item++) \
 
 
-#define _TEST_CASE(test_name) \
+#define _TEST_CASE(test_name, suite) \
 static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7); \
 _TESTS_REGISTER(test_name ## _case, test_name, \
-	_TEST_CASE_TO_NAME(test_name)); \
+	_TEST_CASE_TO_NAME(test_name), suite); \
 static void _TEST_CASE_TO_NAME(test_name)(int *_ret_MPD8Z7)
 
 

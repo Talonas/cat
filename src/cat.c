@@ -457,10 +457,20 @@ static void
 show_tests(void)
 {
 	const struct test_item *item = NULL;
+	int ret;
+
 
 	_FOREACH_TEST(item, test_case, struct test_item)
 	{
-		printf("%s\n", item->name);
+		ret = strlen(item->suite);
+		if (ret != 0)
+		{
+			printf("%s [%s]\n", item->name, item->suite);
+		}
+		else
+		{
+			printf("%s\n", item->name);
+		}
 	}
 }
 
@@ -490,16 +500,54 @@ CAT_AFTER_EACH(dummy_2TDU1qc96gy8Vgfp)
 	return;
 }
 
+static void
+run_test_suite(const char *suite)
+{
+	const struct test_item *item = NULL;
+	struct timeval start;
+	struct timeval end;
+	int ret;
+	char item_suite[128];
+
+	printf("\nRunning test suite \"%s\"\n", suite);
+
+	gettimeofday(&start, NULL);
+
+	_FOREACH_TEST(item, test_case, struct test_item)
+	{
+		ret = strlen(item->suite);
+		if (ret < 2)
+		{
+			continue;
+		}
+
+		memset(item_suite, 0, sizeof(item_suite));
+		memcpy(item_suite, item->suite + 1, strlen(item->suite) - 2);
+
+		ret = strcmp(suite, item_suite);
+		if (ret != 0)
+		{
+			continue;
+		}
+
+		test_case_run(item);
+	}
+
+	gettimeofday(&end, NULL);
+	timersub(&end, &start, &state.time_elapsed);
+
+	deinit_mocked_functions();
+}
+
 int
 main(int argc, char *argv[])
 {
 	int i;
 	int retval = 0;
 	int tests_running = 0;
+	int suite = 0;
 	const struct test_item *test = NULL;
 
-	(void)&_cat_mock;
-	(void)&_cat_unmock;
 
 	state.single_process = 0;
 	state.name = argv[0];
@@ -521,6 +569,9 @@ main(int argc, char *argv[])
 			case 'l':
 				show_tests();
 				break;
+			case 's':
+				suite = 1;
+				break;
 			case 'h':
 			default:
 				help();
@@ -528,15 +579,22 @@ main(int argc, char *argv[])
 		}
 		else
 		{
-			test = test_search(argv[i]);
-			if (test == NULL)
+			if (suite == 1)
 			{
-				printf("Test \"%s\" can't be found\n", argv[i]);
+				run_test_suite(argv[i]);
 			}
 			else
 			{
-				tests_running = 1;
-				test_case_run(test);
+				test = test_search(argv[i]);
+				if (test == NULL)
+				{
+					printf("Test \"%s\" can't be found\n", argv[i]);
+				}
+				else
+				{
+					tests_running = 1;
+					test_case_run(test);
+				}
 			}
 		}
 	}
