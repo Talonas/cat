@@ -175,7 +175,7 @@ _cat_rewrite_func(void *ptr, void *dst)
 		0x68, 0x00, 0x00, 0x00, 0x00, 0xc3
 	};
 	_cat_ptr_data_copy(ptr, hijack_stub, STUB_SIZE);
-	HIJACK_ADDR(addr) = dst;
+	HIJACK_ADDR(ptr) = dst;
 #endif
 }
 
