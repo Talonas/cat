@@ -28,8 +28,8 @@ else \
 
 
 #define CAT_ASSERT_STR_EQUAL(a, b) \
-int ret = strcmp(a, b); \
-if (ret != 0) \
+int _ret_Fe1yVOcW = strcmp(a, b); \
+if (_ret_Fe1yVOcW != 0) \
 { \
 	_TEST_LOG_FAILURE(CAT_ASSERT_STR_EQUAL(a, b)); \
 	*_ret_MPD8Z7 = TEST_FAIL; \
@@ -41,8 +41,8 @@ else \
 }
 
 #define CAT_ASSERT_STR_NOT_EQUAL(a, b) \
-int ret = strcmp(a, b); \
-if (ret == 0) \
+int _ret_YN1hx12F = strcmp(a, b); \
+if (_ret_YN1hx12F == 0) \
 { \
 	_TEST_LOG_FAILURE(CAT_ASSERT_STR_NOT_EQUAL(a, b)); \
 	*_ret_MPD8Z7 = TEST_FAIL; \
